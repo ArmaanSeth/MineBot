@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceInstructEmbeddings
-from langchain.vectorstores.cassandra import Cassandra
+from langchain_community.embeddings import HuggingFaceInstructEmbeddings
+from langchain_community.vectorstores.cassandra import Cassandra
 import cassio
 
 path=os.path.join(os.curdir,"ChatbotDataset/")
