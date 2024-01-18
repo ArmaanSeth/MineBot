@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import streamlit as st
 from langchain_core.prompts import PromptTemplate
-from langchain.memory import ConversationBufferWindowMemory
+from langchain.memory import ConversationKGMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 from langchain_community.vectorstores.cassandra import Cassandra
@@ -17,7 +17,7 @@ prompt_template1="""
 Elaborate Answer the question based only on given context:
 Context: \n{context}\n
 Question: \n{question}\n
-Elaborate the answer giving all the information possible related to the question from the context in english, unless otherwise stated above.
+Elaborate the answer giving all the information possible related to the question from the context in english, unless stated otherwise.
 Dont state about the context in the answer.
 Answer:
 """
@@ -44,7 +44,8 @@ def get_vector_store():
 
 def get_conversation_chain():
     vectorstore=get_vector_store()
-    memory = ConversationBufferWindowMemory(k=2, memory_key='chat_history', return_messages=True)
+    # memory = ConversationBufferWindowMemory(k=2, memory_key='chat_history', return_messages=True) for conversation buffer memory
+    memory = ConversationKGMemory(llm=llm,memory_key='chat_history', return_messages=True)
     chain = ConversationalRetrievalChain.from_llm(llm=llm,
                                                   memory=memory,
                                                   verbose=True,
@@ -57,15 +58,20 @@ def get_conversation_chain():
 def handle_question(question,vectorstore):
     chain=st.session_state.chain
     res=chain({"question":question})
-    st.session_state.chat_history=res["chat_history"]
+    st.session_state.chat_history.append([question,res["answer"]])
+    for conversation in st.session_state.chat_history:
+        st.chat_message("user",avatar='👨🏻‍💼').write(conversation[0])
+        st.chat_message("ai",avatar='🤖').write(conversation[1])
+    #=================================================================== for conversation buffer memory
+    # st.session_state.chat_history=res["chat_history"]
     
-    for i,msg in enumerate(st.session_state.chat_history):
-        if i%2==0:
-            st.chat_message("user",avatar='👨🏻‍💼').write(msg.content)
-        else:
-            st.chat_message("ai",avatar='🤖').write(msg.content)
-    st.chat_message("user",avatar='👨🏻‍💼').write(question)
-    st.chat_message("ai",avatar='🤖').write(res["answer"])
+    # for i,msg in enumerate(st.session_state.chat_history):
+    #     if i%2==0:
+    #         st.chat_message("user",avatar='👨🏻‍💼').write(msg.content)
+    #     else:
+    #         st.chat_message("ai",avatar='🤖').write(msg.content)
+    # st.chat_message("user",avatar='👨🏻‍💼').write(question)
+    # st.chat_message("ai",avatar='🤖').write(res["answer"])
 
 
 def main():
