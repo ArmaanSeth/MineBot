@@ -30,12 +30,14 @@ Chat History: \n{chat_history}\n
 prompt2=PromptTemplate(template=prompt_template2,input_variables=["chat_history"])
 
 def get_embeddings():
-    return HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl", model_kwargs={"device":"cpu"})
+    instruct_embeddings=HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl", model_kwargs={"device":"cuda"})
+    return instruct_embeddings
+
 
 cassio.init(token=os.getenv("ASTRA_DB_APPLICATION_TOKEN"), database_id=os.getenv("ASTRA_DB_ID"))
 def get_vector_store():
     astra_vector_store=Cassandra(
-        embedding=st.session_state.embeddings,
+        embedding=get_embeddings(),
         table_name="qa_mini_demo",
         session=None,
         keyspace=None
@@ -55,7 +57,7 @@ def get_conversation_chain():
                                                   )
     return chain
 
-def handle_question(question,vectorstore):
+def handle_question(question):
     chain=st.session_state.chain
     res=chain({"question":question})
     st.session_state.chat_history.append([question,res["answer"]])
@@ -73,21 +75,17 @@ def handle_question(question,vectorstore):
     # st.chat_message("user",avatar='👨🏻‍💼').write(question)
     # st.chat_message("ai",avatar='🤖').write(res["answer"])
 
-
 def main():
     st.set_page_config(page_title="MinBot", page_icon=":classical_building:")
-    if "embeddings" not in st.session_state:
-        st.session_state.embeddings=get_embeddings()
     if "chain" not in st.session_state:
         st.session_state.chain=get_conversation_chain()
     if "chat_history" not in st.session_state:
         st.session_state.chat_history=[]
-    vectorstore=get_vector_store()
 
     st.header(":male-construction-worker: :orange[Mine]B:blue[o]t.:green[:flag-in:]:", divider="grey")
     question=st.chat_input("🤖 Ask me anything about India's Mining Act rules and regulations.")
     if question:
-        handle_question(question,vectorstore)
+        handle_question(question)
     
 if __name__ == "__main__":
     main()
