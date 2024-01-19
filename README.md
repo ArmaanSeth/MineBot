@@ -4,6 +4,8 @@
 
 The primary purpose of MineBot.In is to provide accurate and reliable information regarding mining acts, rules, and regulations in India. The project leverages advanced natural language processing techniques to understand user queries and generate contextually relevant responses. It serves as a valuable resource for individuals, businesses, and organizations seeking information on mining-related legal frameworks in India.
 
+<img src="https://raw.githubusercontent.com/ArmaanSeth/Images/main/MineBot1.png"/>
+
 ## Implementation
 MineBot.In is an NLP (Natural Language Processing) project designed to answer questions related to mining acts, rules, and regulations in India. The project is implemented using Retrieval-Augmented Generation(RAG) architecture.
 
