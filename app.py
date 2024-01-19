@@ -30,7 +30,7 @@ Chat History: \n{chat_history}\n
 prompt2=PromptTemplate(template=prompt_template2,input_variables=["chat_history"])
 
 def get_embeddings():
-    instruct_embeddings=HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl", model_kwargs={"device":"cuda"})
+    instruct_embeddings=HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl", model_kwargs={"device":"cpu"})
     return instruct_embeddings
 
 

@@ -1,0 +1,11 @@
+langchain
+streamlit
+python-dotenv
+cassio
+InstructorEmbedding
+grpcio
+tiktoken
+langchain_google_genai
+sentence-transformers
+tqdm
+PyPDF2
